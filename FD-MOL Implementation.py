@@ -1,5 +1,7 @@
 # Comparative Analysis of **Method of Lines**, Spectral, and Discontinuous Galerkin Methods for Laptop-Friendly Hypersonic TPS Radiation-Ablation Modeling
 
+# Last edit: 9/24/2025
+
 import numpy as np
 import math
 import matplotlib.pyplot as plt
