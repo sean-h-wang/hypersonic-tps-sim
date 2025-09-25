@@ -77,12 +77,12 @@ params = {
     'qs': None,                   # Sutton-Graves heat flux [W/m²]
     
     # Numerical simulation parameters
-    'N': 100,                      # Number of spatial grid points - 1 (N intervals, N+1 points)
+    'N': 100,                     # Number of spatial grid points - 1 (N intervals, N+1 points)
     'smooth_width': 10.0,         # Width of smoothing region for ablation activation [K]
     'h': None,                    # Grid spacing (calculated by setup_grid)
-    'dt': 0.001,                   # Time step for manual RK4 (if used) [s]
+    'dt': 0.001,                  # Time step for manual RK4 (if used) [s]
     't_max' : None,               # Maximum simulation time [s] (user input)
-    'strategy': 'Radau'      # 'manual RK4' or 'auto RK4' or 'Radau'
+    'strategy': 'Radau'           # 'manual RK4' or 'auto RK4' or 'Radau'
 }
 
 
