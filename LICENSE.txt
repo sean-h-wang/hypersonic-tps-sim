@@ -1,8 +1,8 @@
-Copyright (c) 2025 [Sean H. Wang]
+ Copyright (c) 2025 [Sean H. Wang]
 
 All rights reserved. 
 
-This software and its associated files are the exclusive property of [Your Name]. 
+This software and its associated files are the exclusive property of [Sean H. Wang]. 
 No part of this software may be copied, modified, merged, published, distributed, sublicensed, or otherwise used 
 without the express written permission of the copyright holder.
 
