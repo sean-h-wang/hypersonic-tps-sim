@@ -1,22 +1,19 @@
-
+import json
+import math
+import numpy as np
 from config import params, materials
 
-
 def get_atmospheric_properties(altitude_m: float):
-    """
-    Simplified U.S. Standard Atmosphere (NASA Glenn).
-    Valid up to ~25 km. Returns temperature [K], pressure [Pa],
-    and density [kg/m³].
-    """
-    h = altitude_m
 
-    if h < 11000:  # Troposphere
+    h = altitude_m
+    
+    if h < 11000:
         T = 288.15 - 0.00649 * h
         P = 101325.0 * (T / 288.15) ** 5.256
-    elif h < 25000:  # Lower stratosphere
+    elif h < 25000:
         T = 216.65
         P = 22632.06 * math.exp(-0.000157 * (h - 11000))
-    else:  # Upper stratosphere (approx.)
+    else:
         T = 141.94 + 0.00299 * h
         P = 2488.0 * (T / 216.65) ** (-11.388)
 
@@ -25,20 +22,19 @@ def get_atmospheric_properties(altitude_m: float):
     return T, P, rho
 
 
-def print_material_selection():
-    """Display material selection menu."""
+def print_material_selection(materials):
+    """Display material selection menu - fixed for new JSON format"""
     print("\nMATERIAL SELECTION:")
-    for i in range(1, len(MATERIALS) + 1):
-        mat = MATERIALS[str(i)]
-        print(f"{i}. {mat['name']} (k={mat['k']} W/m·K, rho={mat['rho']} kg/m³, cp={mat['cp']} J/kg·K, T_abl={mat['T_abl']} K)")
+    for i, (name, props) in enumerate(materials.items(), 1):
+        print(f"{i}. {name} (k={props['k']} W/m·K, rho={props['rho']} kg/m³, cp={props['cp']} J/kg·K, T_abl={props['T_abl']} K)")
 
 
-def update_material_properties(material_choice: str):
-    """Update params dictionary with selected material properties."""
-    if material_choice in MATERIALS:
-        material = MATERIALS[material_choice]
+def update_material_properties(material_name: str, materials, params):
+    """Update params with selected material - fixed for new JSON format"""
+    if material_name in materials:
+        material = materials[material_name]
         params.update({
-            'material_name': material['name'],
+            'material_name': material_name,
             'k': material['k'],
             'rho': material['rho'],
             'cp': material['cp'],
@@ -47,7 +43,7 @@ def update_material_properties(material_choice: str):
             'epsilon': material['epsilon']
         })
     else:
-        print(f"Warning: Material choice '{material_choice}' not found.")
+        print(f"Warning: Material '{material_name}' not found.")
 
 
 def calculate_sutton_graves_heating(M_inf, altitude, R_n):
@@ -91,24 +87,27 @@ def calculate_stagnation_temperature(T_inf, M_inf, gamma=1.4):
     return T_r
 
 
-def update_calculated_parameters():
-    """Update params dictionary with calculated atmospheric and heat flux parameters."""
-    # Get atmospheric properties
-    T_inf, P_inf, rho_inf = get_atmospheric_properties(params['altitude'])
-    
-    # Calculate heat flux and flight velocity
-    qs, V_inf = calculate_sutton_graves_heating(params['M_inf'], params['altitude'], params['r'])
-    
-    # Calculate stagnation temperature
-    T_r = calculate_stagnation_temperature(T_inf, params['M_inf'], params['gamma'])
-    
-    # Update params dictionary
-    params.update({
-        'T_inf': T_inf,
-        'P_inf': P_inf,
-        'rho_inf': rho_inf,
-        'T_r': T_r,
-        'V_inf': V_inf,
-        'qs': qs,
-        'h' : 1/params['N']
-    })
+def fill_all_params(M_inf, altitude, material_choice: str):
+    # Update material properties
+    mat = materials[material_choice]
+    for key in ['material_name','k','rho','cp','T_abl','H','epsilon']:
+        params[key] = mat[key]
+
+    # Update flight conditions
+    params['altitude'] = altitude
+    params['M_inf'] = M_inf
+
+    # Calculate derived quantities, e.g., T_inf, qs, V_inf, etc.
+    # Update params in-place
+    T_inf, P_inf, rho_inf = get_atmospheric_properties(altitude, params)
+    params['T_inf'] = T_inf
+    params['P_inf'] = P_inf
+    params['rho_inf'] = rho_inf
+    qs, V_inf = calculate_sutton_graves_heating(M_inf, altitude, params['r'])
+    params['qs'] = qs
+    params['V_inf'] = V_inf
+    T_r = calculate_stagnation_temperature(T_inf, M_inf, params['gamma'])
+    params['T_r'] = T_r
+
+    with open('config/params.json', 'w') as f:
+        json.dump(params, f, indent=2)

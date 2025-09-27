@@ -1,3 +1,7 @@
+import numpy as np
+import math
+from config import params
+
 def smooth_activation_function(T_surface, T_abl, smooth_width):
     """
     Smooth activation function to transition ablation effects
@@ -19,6 +23,7 @@ def smooth_activation_function(T_surface, T_abl, smooth_width):
     else:
         # Smooth transition using a sine function
         return 0.5 * (1 + np.sin(np.pi * (T_surface - T_abl) / smooth_width))
+
 
 def heat_equation_rhs(t, y):
     """

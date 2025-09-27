@@ -25,6 +25,6 @@
   "smooth_width": 10.0,
   "h": null,
   "dt": 0.001,
-  "t_max": null,
+  "t_max": 60.0,
   "strategy": "Radau"
 }
