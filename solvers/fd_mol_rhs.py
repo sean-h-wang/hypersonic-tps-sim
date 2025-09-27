@@ -1,6 +1,5 @@
 import numpy as np
 import math
-from config import params
 
 def smooth_activation_function(T_surface, T_abl, smooth_width):
     """
@@ -25,7 +24,7 @@ def smooth_activation_function(T_surface, T_abl, smooth_width):
         return 0.5 * (1 + np.sin(np.pi * (T_surface - T_abl) / smooth_width))
 
 
-def heat_equation_rhs(t, y):
+def fd_mol_rhs(t, y, params: dict):
     """
     Right-hand side function for the heat equation ODE system
     
